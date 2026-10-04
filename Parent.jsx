@@ -391,6 +391,13 @@ note: install express module
 npm install express
 get:http://localhost:8000/api/v1/Users/101
 get:http://localhost:8000/api/v1/Users
+C:\>node pr5q1.js
+server running at http://${hostname}:{$port}/
+install an extension thunder client for http module
+get:127.0.0.1:4000
+get:127.0.0.1:4000/hello
+get:127.0.0.1:4000/about*/
+
 */
 
 
