@@ -177,10 +177,13 @@ export default App;
 const fs=require("fs") 
 const a=fs.readFileSync('./sample.txt',"utf-8") 
 console.log(a) 
+/*OUTPUT: C:\Program Files\nodejs\node.exe .\Read.js  
+Hello World!  
+This is a file named Sample text.*/ 
 
 
 
-
+/*
 //2.Reading Content of File In Asynchronous way. 
 //CODE: Async.js 
 const fs = require("fs"); 
