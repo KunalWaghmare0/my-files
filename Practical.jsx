@@ -450,3 +450,206 @@ function App() {
 
 export default App;
 */
+
+/*
+/*Q1] Create three pages: Home, About, and Contact using React Router. Configure routes to navigate between the three pages. 
+//Code:  Home.js
+function Home() { 
+return ( 
+<div> 
+<h1>Home Page</h1> 
+<p>Welcome to our website!</p> 
+</div> ); 
+}
+export default Home; 
+
+//Code: Contact.js
+function Contact() { 
+return ( 
+<div> 
+<h1>Contact Page</h1> 
+<p>Contact us on example@gmail.com</p> 
+</div> 
+); 
+}
+export default Contact; 
+
+//Code: About.js
+function About() { 
+return ( 
+<div> 
+<h1>About Page</h1> 
+<p>This is the about page</p> 
+</div> 
+); 
+}
+export default About; 
+
+//Code:App.js
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom"; 
+import Home from "./Home"; 
+import About from "./About"; 
+import Contact from "./Contact"; 
+function App() { 
+return ( 
+<BrowserRouter> 
+<nav> 
+<Link to="/">Home</Link> |{" "} 
+<Link to="/about">About</Link> |{" "} 
+<Link to="/contact">Contact</Link> 
+</nav> 
+<Routes> 
+<Route path="/" element={<Home />} /> 
+<Route path="/about" element={<About />} /> 
+<Route path="/contact" element={<Contact />} /> 
+</Routes> 
+</BrowserRouter> 
+);} 
+export default App; 
+
+//folder:react->reactapp->src(save all react file here,app.js also)->open cmd->npm start
+
+//Q2] Create a navigation bar using Link or NavLink for Home, Products, About, and Contact. 
+
+//Code:Navbar.js 
+import { NavLink } from "react-router-dom"; 
+function Navbar() { 
+return ( 
+<nav> 
+<NavLink 
+to="/" 
+className={({ isActive }) => (isActive ? "active" : "")}> 
+Home 
+</NavLink> 
+<NavLink 
+to="/products" 
+className={({ isActive }) => (isActive ? "active" : "")}> 
+Products 
+</NavLink> 
+<NavLink 
+to="/about" 
+className={({ isActive }) => (isActive ? "active" : "")}> About 
+</NavLink> 
+<NavLink 
+to="/contact" 
+className={({ isActive }) => (isActive ? "active" : "")}> Contact </NavLink> 
+</nav>)}; 
+export default Navbar; 
+
+//code:App.js
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import Navbar from "./Navbar"; 
+import Home from "./Home"; 
+import About from "./About"; 
+import Contact from "./Contact"; 
+function Products() { 
+return ( 
+<div> 
+<h1>Products Page</h1> 
+<p>Welcome to our products page!</p> 
+</div>
+)}; 
+function App() { 
+return ( 
+<BrowserRouter> 
+<Navbar /> 
+<Routes> 
+<Route path="/" element={<Home />} /> 
+<Route path="/products" element={<Products />} /> 
+<Route path="/about" element={<About />} /> 
+<Route path="/contact" element={<Contact />} /> 
+</Routes> 
+</BrowserRouter>);} 
+export default App; 
+
+//code:Index.css
+nav { display: flex; 
+gap: 20px; 
+padding: 20px; 
+background-color: #222;
+} 
+nav a { 
+color: white; 
+text-decoration: none; 
+} 
+nav a.active { 
+color: yellow; 
+font-weight: bold; 
+border-bottom: 2px solid yellow; 
+} 
+
+//Q3] Create a NotFound component that displays “404 - Page Not Found”. Display it whenever the user enters an invalid URL. 
+
+//Code: NotFound.js 
+function NotFound() { 
+return ( 
+<div> 
+<h1>404 - Page Not Found</h1> 
+<p>Sorry, the page you are looking for does not exist.</p> 
+</div> ); 
+} 
+export default NotFound; 
+
+//Code:App.js 
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import Navbar from "./Navbar"; 
+import Home from "./Home"; 
+import About from "./About"; 
+import Contact from "./Contact"; 
+import NotFound from "./NotFound"; 
+function Products() { 
+return ( 
+<div> 
+<h1>
+Products Page
+</h1> 
+<p>Welcome to our products page!</p> 
+</div>)}; 
+function App() { 
+return ( 
+<BrowserRouter> 
+<Navbar /> 
+<Routes> 
+<Route path="/" element={<Home />} /> 
+<Route path="/products" element={<Products />} /> 
+<Route path="/about" element={<About />} /> 
+<Route path="/contact" element={<Contact />} /> 
+<Route path="*" element={<NotFound />} /> 
+</Routes> 
+</BrowserRouter>);} 
+
+//Q4] Create a nested route of your choice with two child routes. Use the <Outlet /> component to render the child routes. 
+
+//Code: Products.js 
+import { Outlet, NavLink } from "react-router-dom"; 
+function Products() {   
+return (     
+<div>       
+<h1>Products</h1>       
+<NavLink to="electronics">Electronics</NavLink>{" | "}       
+<NavLink to="clothing">Clothing</NavLink>       
+<Outlet />     
+</div>   
+);} 
+export default Products; 
+
+//Electronics.js 
+function Electronics() {   
+return (     
+<div>       
+<h2>Electronics</h2>       
+<p>Mobile phones, laptops and other electronic items.</p>     
+</div>   
+);} 
+export default Electronics; 
+
+//Clothing.js 
+function Clothing() {   
+return (     
+<div>       
+<h2>Clothing</h2>       
+<p>Shirts, jeans, jackets and other clothing items.</p>     
+</div>   
+);} 
+export default Clothing; 
+*/
