@@ -343,6 +343,13 @@ prediction = model.predict(test)[0]
 print("\nFinal Prediction:", prediction)'
 '''
 
+
+
+
+
+
+
+
 '''
 # PR 5, Support Vector Machine Classification using sklearn SVC and numpy
 import numpy as np
@@ -390,8 +397,18 @@ prediction = model.predict(test)[0]
 print("\nFinal Prediction:", prediction)
 '''
 
+
+
+
+
+
+
+
+
+
+
 '''
-# PR7, K-Means clustering (user input)
+# PR6, K-Means clustering (user input)
 import math
 
 n = int(input("Enter number of data points: "))
