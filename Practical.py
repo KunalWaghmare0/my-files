@@ -9,6 +9,20 @@ for doc_id, text in docs.items():
         word = word.strip(".,;:!?")     
         pairs.append((word, doc_id))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 pairs.sort()
 
 index = {}
@@ -44,6 +58,14 @@ op = input("Enter operator (AND / OR / NOT): ").upper()
 t2 = input("Enter term 2: ").lower()
 
 print("Result documents:", search(t1, op, t2))'''
+
+
+
+
+
+
+
+
 
 
 
@@ -121,6 +143,11 @@ if not found:
     print("None", end="")
 print()
 '''
+
+
+
+
+
 
 
 
@@ -217,6 +244,11 @@ for s, d in scores:
 
 
 
+
+
+
+
+
 '''
 # Practical 3: Edit distance (Levenshtein) using a matrix
 
@@ -252,6 +284,13 @@ print("\nFinal Edit Distance =", dp[m][n])
 '''
 
 
+
+
+
+
+
+
+
 '''
 # PR4, Q.A, Evaluation Metrics for IR System
 relevant = {"D1","D2","D4","D5"}
@@ -274,6 +313,13 @@ print("\nF-Measure:")
 print(round(f_measure, 2))
 '''
 
+
+
+
+
+
+
+
 '''
 #PR 4, Q.B - average precision and evaluation metrics
 from sklearn.metrics import precision_score, recall_score, f1_score
@@ -293,6 +339,11 @@ print(round(f_measure, 2))
 print("\nAverage Precision:")
 print(round(average_precision, 2))
 '''
+
+
+
+
+
 
 
 '''
@@ -475,3 +526,319 @@ print("\nFinal clusters")
 for j in range(k):
     print("K" + str(j + 1), ":", clusters[j], " centroid =", centroids[j])
 '''
+
+
+
+
+
+
+
+'''pr7
+note: pip install requests,bs4
+Q) Develop a web crawler to fetch and index web pages and
+handle challenges such as robots.txt, dynamic content, and crawling delays.
+import requests
+from bs4 import BeautifulSoup
+import time
+from urllib.robotparser import RobotFileParser
+url = "https://example.com"
+try:
+    robots = RobotFileParser()
+    robots.set_url(url + "/robots.txt")
+    robots.read()
+    if robots.can_fetch("*", url):
+        time.sleep(2)
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, "html.parser")
+        print("Web Page Title:")
+        print(soup.title.text)
+        print("\nWeb Page Content:")
+        print(soup.get_text()[:300])
+        print("\nWeb Page Links:")
+        for link in soup.find_all("a"):
+            href = link.get("href")
+            if href:
+                print(href)
+        print("\nCrawling completed.")
+        print("Note: Dynamic content may require JavaScript.")
+    else:
+        print("Crawling is not allowed by robots.txt")
+except:
+    print("Error while fetching the web page")
+'''
+
+
+
+
+
+
+''' PR 8.
+a]Aim: Implement the PageRank Algorithm to rank web pages.
+import numpy as np
+n = int(input("Enter the number of nodes (webpages): "))
+e = int(input("Enter the number of links: "))
+iterations = int(input("Enter the number of iterations: "))
+adj = np.zeros((n, n))
+print("\nEnter the links (From To):")
+print("(Example: 1 2 means Page 1 links to Page 2)")
+for i in range(e):
+    u, v = map(int, input(f"Link {i+1}: ").split())
+    adj[v-1][u-1] = 1
+M = np.zeros((n, n))
+for j in range(n):
+    out_degree = np.sum(adj[:, j])
+    if out_degree != 0:
+        M[:, j] = adj[:, j] / out_degree
+    else:
+        M[:, j] = 1 / n
+print("\nTransition Matrix (M):")
+print(M)
+r = np.ones(n) / n
+print("\nInitial Rank Vector (r0):")
+print(r)
+for i in range(iterations):
+    r = np.dot(M, r)
+    print(f"\nr{i+1}:")
+    print(r)
+
+highest = np.argmax(r)
+print("\nFinal PageRank Values:")
+for i in range(n):
+    print(f"Node {i+1}: {r[i]:.4f}")
+print(f"\nNode with Highest PageRank: Node {highest+1}")
+print(f"Highest PageRank Value: {r[highest]:.4f}")
+print("\nPageRank computation completed successfully.")
+'''
+
+
+
+
+
+
+
+
+''' PR8
+2]Aim: Apply the HITS Algorithm to a Small Web Graph and Analyze the results
+import math
+import matplotlib.pyplot as plt
+import networkx as nx
+n = int(input("Enter number of nodes: "))
+nodes = []
+print("Enter node names:")
+for i in range(n):
+  nodes.append(input())
+graph = {}
+for node in nodes:
+  graph[node] = []
+e = int(input("Enter number of links(edges): "))
+print("Enter links (From To):")
+for i in range(e):
+  u, v = input().split()
+  graph[u].append(v)
+iterations = int(input("Enter number of iterations: "))
+G = nx.DiGraph()
+for node in nodes:
+  G.add_node(node)
+for u in graph:
+  for v in graph[u]:
+    G.add_edge(u, v)
+print("\nAccepted Graph")
+print(graph)
+plt.figure(figsize=(6, 6))
+pos = nx.spring_layout(G, seed=20)
+nx.draw(
+    G,
+    pos,
+    with_labels=True,
+    node_size=2000,
+    node_color="skyblue",
+    arrows=True,
+    font_size=12,
+    font_weight="bold",
+)
+plt.title("Web Graph")
+plt.show()
+authority = {}
+hub = {}
+for node in nodes:
+  authority[node] = 1.0
+  hub[node] = 1.0
+for itr in range(iterations):
+  print("\n" + "=" * 45)
+  print(f"Iteration {itr + 1}")
+  print("=" * 45)
+  new_authority = {}
+  for node in nodes:
+    score = 0
+    for src in nodes:
+      if node in graph[src]:
+        score += hub[src]
+    new_authority[node] = score
+  norm = math.sqrt(sum(value**2 for value in new_authority.values()))
+  norm_authority = {}
+  for node in nodes:
+    if norm != 0:
+      norm_authority[node] = new_authority[node] / norm
+    else:
+      norm_authority[node] = 0
+  authority = norm_authority.copy()
+  new_hub = {}
+  for node in nodes:
+    score = 0
+    for dest in graph[node]:
+      score += authority[dest]
+    new_hub[node] = score
+
+  norm = math.sqrt(sum(value**2 for value in new_hub.values()))
+  norm_hub = {}
+  for node in nodes:
+    if norm != 0:
+      norm_hub[node] = new_hub[node] / norm
+    else:
+      norm_hub[node] = 0
+  hub = norm_hub.copy()
+  # Print scores inside the iteration loop to match your image format
+  print("\nAuthority Score")
+  for node in nodes:
+    print(node, ":", round(new_authority[node], 4))
+  print("\nNormalized Authority Score")
+  for node in nodes:
+    print(node, ":", round(authority[node], 4))
+  print("\nHub Score")
+  for node in nodes:
+    print(node, ":", round(new_hub[node], 4))
+  print("\nNormalized Hub Score")
+  for node in nodes:
+    print(node, ":", round(hub[node], 4))
+# Final Result Summary
+print("\n" + "=" * 45)
+print("FINAL RESULT")
+print("=" * 45)
+best_authority = max(authority, key=authority.get)
+best_hub = max(hub, key=hub.get)
+print("Best Authority Node :", best_authority)
+print("Authority Score :", round(authority[best_authority], 4))
+print()
+print("Best Hub Node :", best_hub)
+print("Hub Score :", round(hub[best_hub], 4))
+'''
+
+
+
+
+'''pr9
+a. Implement a learning to rank algorithm (e.g., RankSVM or RankBoost).
+b. Train the ranking model using labelled data and evaluate its effectiveness.
+Note:install module: pip install scikit-learn
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
+
+X=[[1,0],[2,1],[3,2],[4,3],[5,4],[2,0],[3,1],[4,2],[5,3],[1,1]]
+y=[0,0,1,1,1,0,1,1,1,0]
+
+model=SVC(kernel='linear')
+model.fit(X,y)
+
+test_data=[[1,0],[2,1],[3,2],[4,3],[5,4]]
+actual=[0,0,1,1,1]
+
+predicted=model.predict(test_data)
+
+accuracy=accuracy_score(actual,predicted)
+precision=precision_score(actual,predicted)
+recall=recall_score(actual,predicted)
+f_measure=f1_score(actual,predicted)
+
+print("a. Learning to Rank using RankSVM")
+print("Ranking Results:")
+print(predicted)
+
+print("\nb. Training and Evaluation")
+print("Training Data:")
+print(X)
+
+print("\nTraining Labels:")
+print(y)
+
+print("\nActual Labels:")
+print(actual)
+
+print("\nPredicted Labels:")
+print(predicted)
+
+print("\nAccuracy:")
+print(round(accuracy,2))
+
+print("\nPrecision:")
+print(round(precision,2))
+
+print("\nRecall:")
+print(round(recall,2))
+
+print("\nF-Measure:")
+print(round(f_measure,2))
+'''
+
+
+
+
+
+
+
+'''PR10
+Q1] Implement the text Summarization Algorithm (Extractive or Abstractive)
+Note:cmd:Python -c "import nltk; nltk.download('stopwords')",pip install nlkt
+import nltk
+import heapq
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+text = """
+Information Retrieval is the process of obtaining relevant information
+from a large collection of information resources. Search engines use
+Information Retrieval techniques to find useful documents for users.
+Text summarization is an important application of Information Retrieval
+and Natural Language Processing. It helps users understand large
+documents quickly by generating a shorter version of the original text.
+Extractive summarization selects the most important sentences from the
+original document without changing their wording.
+"""
+sentences = sent_tokenize(text)
+stop_words = set(stopwords.words('english'))
+word_frequency = {}
+for word in word_tokenize(text.lower()):
+    if word.isalnum() and word not in stop_words:
+        if word not in word_frequency:
+            word_frequency[word] = 1
+        else:
+            word_frequency[word] += 1
+maximum_frequency = max(word_frequency.values())
+
+for word in word_frequency:
+    word_frequency[word] = word_frequency[word] / maximum_frequency
+sentence_scores = {}
+for sentence in sentences:
+    for word in word_tokenize(sentence.lower()):
+        if word in word_frequency:
+            if len(sentence.split()) < 40:
+                if sentence not in sentence_scores:
+                    sentence_scores[sentence] = word_frequency[word]
+                else:
+                    sentence_scores[sentence] += word_frequency[word]
+summary_sentences = heapq.nlargest(
+    3,
+    sentence_scores,
+    key=sentence_scores.get
+)
+summary = " ".join(summary_sentences)
+print("Original Text:")
+print(text)
+print("\nExtractive Summary:")
+print(summary)
+'''
+
+
+
+
+
+
