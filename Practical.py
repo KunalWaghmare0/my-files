@@ -458,9 +458,22 @@ print("\nFinal Prediction:", prediction)
 
 
 
+
 '''
-# PR6, K-Means clustering (user input)
+# PR6, K-Means clustering (user input) - shows how each cluster is formed
 import math
+
+def f(v):
+    v = round(v, 2)
+    if v == int(v):
+        return str(int(v))
+    return str(v)
+
+def pt(c):                               
+    return "(" + f(c[0]) + ", " + f(c[1]) + ")"
+
+def distance(a, b):
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 n = int(input("Enter number of data points: "))
 points = []
@@ -474,47 +487,48 @@ for i in range(k):
     x, y = input("Enter K" + str(i + 1) + " centroid (x y): ").split()
     centroids.append((float(x), float(y)))
 
-def distance(a, b):
-    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
-
 print("\nStep 1 : Initial centroids")
-for i in range(k):
-    print("K" + str(i + 1), "=", centroids[i])
+for j in range(k):
+    print("K" + str(j + 1), "=", pt(centroids[j]))
 
 iteration = 1
 while True:
     print("\n========== Iteration", iteration, "==========")
 
-    print("\nStep 2 : Euclidean distances")
-    header = "Point\t" + "\t".join("K" + str(j + 1) for j in range(k)) + "\tCluster"
-    print(header)
+    if iteration == 1:
+        print("\nStep 2 : Euclidean distance = sqrt((x1-x2)^2 + (y1-y2)^2)")
+        print("Point\t" + "\t".join("K" + str(j + 1) for j in range(k)))
+        for i in range(n):
+            row = [str(round(distance(points[i], centroids[j]), 2)) for j in range(k)]
+            print("P" + str(i + 1) + "\t" + "\t".join(row))
 
-    clusters = [[] for _ in range(k)]
+    print("\nStep 3 : Forming clusters (centroid = mean of the points in the cluster)")
+    clusters = [[] for _ in range(k)]      
+    names = [[] for _ in range(k)]        
+    new_centroids = list(centroids)
+
     for i in range(n):
-        dists = []
-        for j in range(k):
-            dists.append(distance(points[i], centroids[j]))
-        nearest = dists.index(min(dists))         
+        dists = [distance(points[i], centroids[j]) for j in range(k)]
+        nearest = dists.index(min(dists))
         clusters[nearest].append(points[i])
-        row = "P" + str(i + 1) + "\t" + "\t".join(str(round(d, 2)) for d in dists)
-        print(row + "\tK" + str(nearest + 1))
+        names[nearest].append("P" + str(i + 1))
 
-    print("\nStep 3 : Clusters")
-    for j in range(k):
-        print("K" + str(j + 1), ":", clusters[j])
+        cl = clusters[nearest]
+        cnt = len(cl)
+        xs = "+".join(f(p[0]) for p in cl)
+        ys = "+".join(f(p[1]) for p in cl)
+        mx = sum(p[0] for p in cl) / cnt
+        my = sum(p[1] for p in cl) / cnt
+        new_centroids[nearest] = (round(mx, 2), round(my, 2))
 
-    new_centroids = []
-    for j in range(k):
-        if len(clusters[j]) > 0:
-            mx = sum(p[0] for p in clusters[j]) / len(clusters[j])
-            my = sum(p[1] for p in clusters[j]) / len(clusters[j])
-            new_centroids.append((round(mx, 2), round(my, 2)))
-        else:
-            new_centroids.append(centroids[j])      
+        d_text = ", ".join("d(K" + str(j + 1) + ")=" + str(round(dists[j], 2)) for j in range(k))
+        print("\nP" + str(i + 1) + " " + f(points[i][0]) + "," + f(points[i][1]) + " : " + d_text + " -> nearest K" + str(nearest + 1))
+        print("   Add P" + str(i + 1) + " to K" + str(nearest + 1) + "  (K" + str(nearest + 1) + " now has " + ", ".join(names[nearest]) + ")")
+        print("   K" + str(nearest + 1) + " new centroid = ((" + xs + ")/" + str(cnt) + ", (" + ys + ")/" + str(cnt) + ") = (" + f(mx) + ", " + f(my) + ")")
 
-    print("\nStep 4 : New centroids")
+    print("\nStep 4 : Clusters and new centroids")
     for j in range(k):
-        print("K" + str(j + 1), "=", new_centroids[j])
+        print("K" + str(j + 1), ":", names[j], " centroid =", pt(new_centroids[j]))
 
     if new_centroids == centroids:
         print("\nCentroids did not change. Clustering is complete.")
@@ -524,8 +538,12 @@ while True:
 
 print("\nFinal clusters")
 for j in range(k):
-    print("K" + str(j + 1), ":", clusters[j], " centroid =", centroids[j])
+    print("K" + str(j + 1), ":", names[j], " centroid =", pt(centroids[j]))
+
 '''
+
+
+
 
 
 
