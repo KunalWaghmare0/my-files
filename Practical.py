@@ -58,7 +58,7 @@ print("Decision: Reject H0" if reject else "Decision: Fail to reject H0")
 #Universal cmd command: python -m pip install numpy scipy pandas statsmodels
 #c: pip install numpy scipy
 #only numpy and scipy are third-party, so you can check the install with python -c "import numpy, scipy; print('ok')".
-
+'''python -m pip install numpy scipy. On some systems it is py -m pip install numpy scipy.'''
 
 
 
@@ -1035,3 +1035,106 @@ print(f"Chi-square critical   = {crit:.4f}")
 print(f"p-value               = {p_value:.4f}")
 print("Decision: Reject H0" if chi_cal > crit else "Decision: Fail to reject H0")
 '''
+
+
+
+
+
+'''-PR 12, Friedman test
+import numpy as np
+from scipy.stats import rankdata, chi2, friedmanchisquare
+
+M = [18, 22, 20, 16, 19, 21, 17, 23, 18, 20, 15, 22, 19, 17, 21, 16, 20, 18, 23, 19]
+A = [15, 19, 18, 14, 17, 20, 16, 21, 17, 19, 13, 20, 18, 15, 19, 14, 18, 17, 22, 17]
+E = [14, 17, 15, 13, 16, 18, 14, 19, 15, 17, 12, 18, 16, 14, 17, 13, 16, 15, 20, 16]
+N = [12, 16, 14, 11, 15, 17, 13, 18, 14, 16, 10, 17, 15, 13, 16, 11, 15, 14, 19, 15]
+names = ["Morning", "Afternoon", "Evening", "Night"]
+alpha = 0.05                                 
+data = np.column_stack([M, A, E, N])          
+b, k = data.shape                             
+
+# ---------- Rank within each student (ties get the average rank) ----------
+ranks = np.array([rankdata(row) for row in data])
+R = ranks.sum(axis=0)                       
+# ---------- Friedman statistic ----------
+chi_r = 12 / (b * k * (k + 1)) * np.sum(R ** 2) - 3 * b * (k + 1)
+
+# tie correction
+tie_sum = sum(np.sum(c ** 3 - c) for c in
+              (np.unique(row, return_counts=True)[1] for row in data))
+C = 1 - tie_sum / (b * k * (k ** 2 - 1))
+chi_corr = chi_r / C
+
+df = k - 1
+crit = chi2.ppf(1 - alpha, df)
+p_value = 1 - chi2.cdf(chi_corr, df)
+
+print("H0: no difference in recall performance across the times of day")
+print("H1: at least one time of day gives a different recall performance\n")
+print("Rank sums :", dict(zip(names, R)))
+print("Mean ranks:", dict(zip(names, np.round(R / b, 2))))
+print(f"Check: sum of rank sums = {R.sum()}, b*k*(k+1)/2 = {b * k * (k + 1) / 2}")
+print(f"\nb = {b}, k = {k}, df = {df}")
+print(f"Friedman statistic (no tie correction) = {chi_r:.4f}")
+print(f"Tie correction factor                  = {C:.4f}")
+print(f"Friedman statistic (corrected)         = {chi_corr:.4f}")
+print(f"Chi-square critical value (alpha={alpha}) = {crit:.4f}")
+print(f"p-value                                = {p_value:.3e}")
+print("Decision:", "Reject H0" if chi_corr > crit else "Fail to reject H0")
+
+stat, p = friedmanchisquare(M, A, E, N)
+print(f"\nSciPy check: statistic = {stat:.4f}, p-value = {p:.3e}")
+'''
+
+
+
+
+'''
+import numpy as np
+from scipy.stats import rankdata, chi2, kruskal
+
+A = [12, 14, 11, 13, 15, 12, 14, 13, 11, 12, 15, 13, 14, 12, 11, 13, 15, 12, 14, 13]
+B = [15, 13, 16, 14, 12, 15, 13, 14, 16, 15, 12, 14, 13, 15, 16, 14, 12, 15, 13, 14]
+C = [18, 20, 17, 19, 16, 18, 20, 17, 18, 19, 16, 17, 18, 19, 17, 18, 16, 19, 17, 18]
+groups = [np.array(A), np.array(B), np.array(C)]
+names = ["Method A", "Method B", "Method C"]
+alpha = 0.05                                   
+
+sizes = [len(g) for g in groups]
+N = sum(sizes)
+k = len(groups)
+all_ranks = rankdata(np.concatenate(groups))
+
+rank_sums, start = [], 0
+for n_i in sizes:
+    rank_sums.append(all_ranks[start:start + n_i].sum())
+    start += n_i
+
+H = 12 / (N * (N + 1)) * sum(R ** 2 / n_i for R, n_i in zip(rank_sums, sizes)) - 3 * (N + 1)
+
+_, counts = np.unique(np.concatenate(groups), return_counts=True)
+C = 1 - np.sum(counts ** 3 - counts) / (N ** 3 - N)
+H_corr = H / C
+
+df = k - 1
+crit = chi2.ppf(1 - alpha, df)
+p_value = 1 - chi2.cdf(H_corr, df)
+
+print("H0: the distribution (median) of scores is the same for all three methods")
+print("H1: at least one method differs\n")
+print(f"{'Method':<10}{'n':>4}{'Rank sum':>11}{'Mean rank':>11}")
+for nm, n_i, R in zip(names, sizes, rank_sums):
+    print(f"{nm:<10}{n_i:>4}{R:>11.1f}{R / n_i:>11.2f}")
+print(f"\nCheck: sum of rank sums = {sum(rank_sums)}, N(N+1)/2 = {N * (N + 1) / 2}")
+print(f"\nN = {N}, k = {k}, df = {df}")
+print(f"H (without tie correction) = {H:.4f}")
+print(f"Tie correction factor      = {C:.4f}")
+print(f"H (corrected for ties)     = {H_corr:.4f}")
+print(f"Chi-square critical value  = {crit:.4f}")
+print(f"p-value                    = {p_value:.3e}")
+print("Decision:", "Reject H0" if H_corr > crit else "Fail to reject H0")
+
+stat, p = kruskal(*groups)
+print(f"\nSciPy check: H = {stat:.4f}, p-value = {p:.3e}")
+'''
+
